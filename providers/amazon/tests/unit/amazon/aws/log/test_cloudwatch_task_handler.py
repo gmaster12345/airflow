@@ -106,7 +106,11 @@ class TestCloudRemoteLogIO:
 
             # Set up the right chain of processors so the event looks like we want for our full test
             monkeypatch.setattr(airflow.logging_config, "REMOTE_TASK_LOG", self.subject)
-            procs, _ = airflow.sdk.log.logging_processors(enable_pretty_log=False)
+            try:
+                procs = airflow.sdk.log.logging_processors(colors=False, json_output=False)
+            except TypeError:
+                # Compat issue only comes up in the tests, not in the real code
+                procs, _ = airflow.sdk.log.logging_processors(enable_pretty_log=False)
             processors.clear()
             processors.extend(procs)
 
