@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import abc
 import enum
+import logging
 import re
 import sys
 from io import TextIOBase, UnsupportedOperation
@@ -285,6 +286,10 @@ def set_context(logger, value):
     :param logger: logger
     :param value: value to set
     """
+    if not isinstance(logger, logging.Logger):
+        # This fn doesn't make sense for structlog based handlers
+        return
+
     while logger:
         orig_propagate = logger.propagate
         for handler in logger.handlers:
